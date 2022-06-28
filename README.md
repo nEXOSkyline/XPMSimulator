@@ -19,5 +19,4 @@
 
 # Screenshots
 
-<img src="/screenshot1.jpg">
-<img src="/screenshot2.png">
+<img src="/screenshot1.jpg" width="300"> <img src="/screenshot2.png" width="300">
