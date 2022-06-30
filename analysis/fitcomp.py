@@ -34,6 +34,18 @@ from lmfit import Model
 #p7                        =      -390916
 #p8                        =         81.9
 
+# best fit parameters for raw_sig.dat and raw_bkg.dat
+#{'cat': 41.93696059244275,
+# 'an': 42.04834238775081,
+# 'tcrise': 1.8283226210386985,
+# 'cent_c': 9.20915832759835,
+# 'gam_c': 0.4583927179361264,
+# 'tarise': 1.019244708214796,
+# 'cent_a': 81.41672761244706,
+# 'gam_a': 1.80825,
+# 'skew_a': 0.9827649391120391,
+# 'offst': 0.4508981196975133}
+
 
 pkmodel = SkewedVoigtModel()
 catmodel = ExponentialGaussianModel()
