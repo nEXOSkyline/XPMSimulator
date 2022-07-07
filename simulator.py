@@ -187,7 +187,7 @@ class Graph(tk.Frame):
 
 
     def fileselect(self):
-        print('File select button has been pressed')
+        #print('File select button has been pressed')
         self.filename = filedialog.askopenfilename(initialdir='C:/Users/skyphysics/',title='select a file',filetypes=[("Text Files","*.txt") , ("Data Files","*.dat")])
         self.f = open(self.filename)
         self.textfile = self.f.read()
@@ -197,7 +197,7 @@ class Graph(tk.Frame):
         self.fl_label.place(x=0,y=25)
         self.fs_btn.place_forget()
     def backgroundselect(self):
-        print('Background select button has been pressed')
+        #print('Background select button has been pressed')
         self.backgroundname = filedialog.askopenfilename(initialdir = ' C:/Users/skyphysics/', title = 'select background file', filetypes =[("Text Files","*.txt") , ("Data Files","*.dat")])
         self.f2 = open(self.backgroundname)
         self.background = self.f2.read()
