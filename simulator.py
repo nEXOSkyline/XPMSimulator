@@ -158,7 +158,7 @@ class Graph(tk.Frame):
 
         # Get noise
         self.nt = []
-        with open('C:/Users/skyphysics/PycharmProjects/XPM-Simulator/noise_template.csv', 'r', newline='') as fnoise:
+        with open('./noise_template.csv', 'r', newline='') as fnoise:
             for line in fnoise:
                 self.nt.append(float(line.split(',')[1]))
 
