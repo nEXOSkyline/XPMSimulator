@@ -258,7 +258,7 @@ class Graph(tk.Frame):
             an=downstroke,
             cat=cathode,
             offst=0.4508981196975133,
-            thold=self.p_i[3],
+            #thold=self.p_i[3],
             tcrise=1.8283226210386985,
             tarise=1.019244708214796,
             cent_a=81.41672761244706,
@@ -274,10 +274,13 @@ class Graph(tk.Frame):
         f_bkg = open('./raw_bkg_template.dat','r')
         baseline = f_bkg.read()
         basedl = np.array([ int(s) for s in baseline.split(',') ])
+        if self.is_14bit == False :
+            basedl = np.array([ int(s)/256 for s in baseline.split(',') ])
         f_bkg.close()  
-        mv_bkg = float(self.preamble.split(';')[12])*(basedl - float(self.preamble.split(';')[14])) + float(self.preamble.split(';')[13])
-        self.waveform = self.waveform + random.gauss(0.0,0.066) + mv_bkg #noise model 2022-7-8
-
+        mv_bkg = 1000.0*float(self.preamble.split(';')[12])*(basedl - float(self.preamble.split(';')[14])) + float(self.preamble.split(';')[13])
+        self.waveform = self.waveform + mv_bkg #noise model 2022-7-8
+        for i in range(0,len(self.waveform)) :
+          self.waveform[i] = self.waveform[i] + random.gauss(0.0,0.066) 
         for millivolt in self.waveform:
             # t_wall = t_wall + 8.0e-7
             # bl = int(16384.0*np.sin(2*np.pi*2500.0*t_wall - ct*np.pi*0.75 ))
@@ -291,13 +294,14 @@ class Graph(tk.Frame):
                 self.dl = (self.dl >> 2) * 4
                 # 8-bit operation
             else:
-                self.dl = (self.dl >> 8)
+                self.dl = (self.dl >> 8)*256
             msg = msg + str(self.dl)
             msg = msg + ','
 
         msg = msg[:-1] + '\n'
-        if self.ct % 2 < 0 :
-            msg = baseline
+        if self.ct % 2 == 0 :
+            self.waveform = mv_bkg
+            msg = ','.join([ str( int((int(s)-float(self.preamble.split(';')[14]))/-1) ) for s in baseline.split(',')]) + '\n'
         # Increment counter
         self.ct = self.ct + 1
         print('msg:', msg)
