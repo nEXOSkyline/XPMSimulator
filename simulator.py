@@ -269,18 +269,20 @@ class Graph(tk.Frame):
         )
 
         rdx = self.ct + self.randstart
-        baseline = np.array(
-            [self.nt[(((rdx + jj) + ((rdx + jj) >= 500)) % 500) * (-1) ** ((rdx + jj) >= 500)] for jj in range(0, 500)])
-        self.waveform = self.waveform + baseline
+        #baseline = np.array(
+        #    [self.nt[(((rdx + jj) + ((rdx + jj) >= 500)) % 500) * (-1) ** ((rdx + jj) >= 500)] for jj in range(0, 500)])
+        f_bkg = open('./raw_bkg_template.dat','r')
+        baseline = f_bkg.read()
+        basedl = np.array([ int(s) for s in baseline.split(',') ])
+        f_bkg.close()  
+        self.waveform = self.waveform + random.gauss(0.0,0.066) #noise model 2022-7-8
 
-        print('**************** ' + str(baseline[50]) + ' ***************')
-
-        for millivolt in self.waveform:
+        for millivolt,bkg in zip(self.waveform,bkg):
             # t_wall = t_wall + 8.0e-7
             # bl = int(16384.0*np.sin(2*np.pi*2500.0*t_wall - ct*np.pi*0.75 ))
             self.dl = float(self.preamble.split(';')[14]) + (
                         millivolt / 1.0e3 - float(self.preamble.split(';')[13])) / float(self.preamble.split(';')[12])
-            self.dl = int(-1.0 * self.dl) + 0
+            self.dl = int(-1.0 * ( self.dl + bkg ) ) 
 
             # 14 bit operation
             if self.is_14bit.get():
@@ -289,13 +291,14 @@ class Graph(tk.Frame):
                 # 8-bit operation
             else:
                 self.dl = (self.dl >> 8)
-            msg = msg + str(self.dl * (self.ct % 2))
+            msg = msg + str(self.dl)
             msg = msg + ','
 
+        msg = msg[:-1] + '\n'
+        if ct%2 == 0 :
+            msg = baseline
         # Increment counter
         self.ct = self.ct + 1
-
-        msg = msg[:-1] + '\n'
         print('msg:', msg)
         return msg
 
