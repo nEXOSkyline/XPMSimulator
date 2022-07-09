@@ -146,7 +146,7 @@ class Graph(tk.Frame):
             an=downstroke,
             cat=cathode,
             offst=0.4508981196975133,
-            thold=self.p_i[3],
+            #thold=self.p_i[3],
             tcrise=1.8283226210386985,
             tarise=1.019244708214796,
             cent_a=81.41672761244706,
@@ -243,7 +243,7 @@ class Graph(tk.Frame):
         wavparams['cat'].value = cathode
         wavparams['an'].value = downstroke
         wavparams['offst'].value = 0.4508981196975133
-        wavparams['thold'].value = self.p_i[3]
+        #wavparams['thold'].value = self.p_i[3]
         wavparams['tcrise'].value = 1.8283226210386985
         wavparams['tarise'].value = 1.019244708214796
         wavparams['cent_a'].value = 81.41672761244706
@@ -275,14 +275,15 @@ class Graph(tk.Frame):
         baseline = f_bkg.read()
         basedl = np.array([ int(s) for s in baseline.split(',') ])
         f_bkg.close()  
-        self.waveform = self.waveform + random.gauss(0.0,0.066) #noise model 2022-7-8
+        mv_bkg = float(self.preamble.split(';')[12])*(basedl - float(self.preamble.split(';')[14])) + float(self.preamble.split(';')[13])
+        self.waveform = self.waveform + random.gauss(0.0,0.066) + mv_bkg #noise model 2022-7-8
 
-        for millivolt,bkg in zip(self.waveform,bkg):
+        for millivolt in self.waveform:
             # t_wall = t_wall + 8.0e-7
             # bl = int(16384.0*np.sin(2*np.pi*2500.0*t_wall - ct*np.pi*0.75 ))
             self.dl = float(self.preamble.split(';')[14]) + (
                         millivolt / 1.0e3 - float(self.preamble.split(';')[13])) / float(self.preamble.split(';')[12])
-            self.dl = int(-1.0 * ( self.dl + bkg ) ) 
+            self.dl = int(-1.0 * ( self.dl ) ) 
 
             # 14 bit operation
             if self.is_14bit.get():
@@ -295,7 +296,7 @@ class Graph(tk.Frame):
             msg = msg + ','
 
         msg = msg[:-1] + '\n'
-        if ct%2 == 0 :
+        if self.ct % 2 < 0 :
             msg = baseline
         # Increment counter
         self.ct = self.ct + 1
