@@ -191,6 +191,7 @@ class Graph(tk.Frame):
         self.filename = filedialog.askopenfilename(initialdir='C:/Users/skyphysics/',title='select a file',filetypes=[("Text Files","*.txt") , ("Data Files","*.dat")])
         self.f = open(self.filename)
         self.textfile = self.f.read()
+        self.textfile = ','.join([ str( int((int(s)-float(self.preamble.split(';')[14]))*256) ) for s in self.textfile.split(',')]) + '\n'
         self.f.close()
         print(self.textfile)
         self.filelocation.set(self.filename)
@@ -201,6 +202,7 @@ class Graph(tk.Frame):
         self.backgroundname = filedialog.askopenfilename(initialdir = ' C:/Users/skyphysics/', title = 'select background file', filetypes =[("Text Files","*.txt") , ("Data Files","*.dat")])
         self.f2 = open(self.backgroundname)
         self.background = self.f2.read()
+        self.background = ','.join([ str( int((int(s)-float(self.preamble.split(';')[14]))*256) ) for s in self.background.split(',')]) + '\n'
         self.f2.close()
         self.filelocation2.set(self.backgroundname)
         self.fl_label2.place(x=0,y=50)
@@ -217,7 +219,7 @@ class Graph(tk.Frame):
         else:
             dl_txt = self.background.split(',')
             msg = self.background
-        dl = np.array([ int(s) for s in dl_txt ])
+        dl = np.array([ int(s)*256 for s in dl_txt ])
         millivolt = float(self.preamble.split(';')[12])*(dl - float(self.preamble.split(';')[14])) + float(self.preamble.split(';')[13])
         millivolt = millivolt * 1000.0
         self.waveform = millivolt
