@@ -277,7 +277,7 @@ class Graph(tk.Frame):
         baseline = f_bkg.read()
         basedl = np.array([ int(s) for s in baseline.split(',') ])
         if self.is_14bit == False :
-            basedl = np.array([ int(s)/256 for s in baseline.split(',') ])
+            basedl = np.array([ int(s)/-256 for s in baseline.split(',') ])
         f_bkg.close()  
         mv_bkg = 1000.0*float(self.preamble.split(';')[12])*(basedl - float(self.preamble.split(';')[14])) + float(self.preamble.split(';')[13])
         self.waveform = self.waveform + mv_bkg #noise model 2022-7-8
