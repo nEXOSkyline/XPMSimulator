@@ -219,7 +219,7 @@ class Graph(tk.Frame):
         else:
             dl_txt = self.background.split(',')
             msg = self.background
-        dl = np.array([ int(s)*256 for s in dl_txt ])
+        dl = np.array([ int(s) for s in dl_txt ])
         millivolt = float(self.preamble.split(';')[12])*(dl - float(self.preamble.split(';')[14])) + float(self.preamble.split(';')[13])
         millivolt = millivolt * 1000.0
         self.waveform = millivolt
@@ -269,41 +269,34 @@ class Graph(tk.Frame):
             gam_c=0.4583927179361264,
             cent_c=9.20915832759835
         )
+        for i in range(0,len(self.waveform)) :
+          self.waveform[i] = self.waveform[i] + random.gauss(0.0,0.066)
 
-        rdx = self.ct + self.randstart
-        #baseline = np.array(
-        #    [self.nt[(((rdx + jj) + ((rdx + jj) >= 500)) % 500) * (-1) ** ((rdx + jj) >= 500)] for jj in range(0, 500)])
-        f_bkg = open('./raw_bkg_template.dat','r')
+        f_bkg = open('./raw_bkg_template.dat','r')#noise template was recorded in 14-bit mode
         baseline = f_bkg.read()
         basedl = np.array([ int(s) for s in baseline.split(',') ])
-        if self.is_14bit == False :
-            basedl = np.array([ int(s)/-256 for s in baseline.split(',') ])
-        f_bkg.close()  
-        mv_bkg = 1000.0*float(self.preamble.split(';')[12])*(basedl - float(self.preamble.split(';')[14])) + float(self.preamble.split(';')[13])
-        self.waveform = self.waveform + mv_bkg #noise model 2022-7-8
-        for i in range(0,len(self.waveform)) :
-          self.waveform[i] = self.waveform[i] + random.gauss(0.0,0.066) 
-        for millivolt in self.waveform:
-            # t_wall = t_wall + 8.0e-7
-            # bl = int(16384.0*np.sin(2*np.pi*2500.0*t_wall - ct*np.pi*0.75 ))
-            self.dl = float(self.preamble.split(';')[14]) + (
-                        millivolt / 1.0e3 - float(self.preamble.split(';')[13])) / float(self.preamble.split(';')[12])
-            self.dl = int(-1.0 * ( self.dl ) ) 
+        f_bkg.close()
+        
+        mv_bkg = 1000.0*float(self.preamble_16_bit.split(';')[12])*(basedl - float(self.preamble_16_bit.split(';')[14])) + float(self.preamble_16_bit.split(';')[13])
 
-            # 14 bit operation
-            if self.is_14bit.get():
-                # throw away the 2 least significant bits so that 16 bit -> 14 bit
-                self.dl = (self.dl >> 2) * 4
-                # 8-bit operation
-            else:
-                self.dl = (self.dl >> 8)*256
-            msg = msg + str(self.dl)
-            msg = msg + ','
+        self.waveform = self.waveform + mv_bkg
 
-        msg = msg[:-1] + '\n'
+        dl_sig_bkg = float(self.preamble.split(';')[14]) + (self.waveform/1000.0 - float(self.preamble.split(';')[13])) / float(self.preamble.split(';')[12])
+        dl_bkg = float(self.preamble.split(';')[14]) + (mv_bkg/1000.0 - float(self.preamble.split(';')[13])) / float(self.preamble.split(';')[12])
+
+        if self.is_14bit.get() == False :
+            dl_sig_bkg = np.array([ (int(dl)>>8)*256 for dl in dl_sig_bkg])
+            dl_bkg = np.array([ (int(dl)>>8)*256 for dl in dl_bkg])
+        else :
+            dl_sig_bkg = np.array([ (int(dl)>>2)*4 for dl in dl_sig_bkg])
+            dl_bkg = np.array([ (int(dl)>>2)*4 for dl in dl_bkg])
+
         if self.ct % 2 == 0 :
-            self.waveform = mv_bkg
-            msg = ','.join([ str( int((int(s)-float(self.preamble.split(';')[14]))/-1) ) for s in baseline.split(',')]) + '\n'
+            msg = ','.join([ str(-dl) for dl in dl_bkg ]) + '\n'
+            self.waveform = 1000.0*float(self.preamble.split(';')[12])*(dl_bkg - float(self.preamble.split(';')[14])) + float(self.preamble.split(';')[13])
+        else :
+            msg = ','.join([ str(-dl) for dl in dl_sig_bkg ]) + '\n'
+            self.waveform = 1000.0*float(self.preamble.split(';')[12])*(dl_sig_bkg - float(self.preamble.split(';')[14])) + float(self.preamble.split(';')[13])
         # Increment counter
         self.ct = self.ct + 1
         print('msg:', msg)

@@ -8,7 +8,7 @@ import time
 import matplotlib.dates as dt
 import numpy as np
 import datetime
-import ROOT
+#import ROOT
 from scipy import integrate
 from scipy import interpolate
 from scipy.special import erfc
@@ -279,11 +279,18 @@ result = wavmodel.fit(volt[t<150],wavparams,x=t[t<150])
 b = result.best_values
 #b = wavparams
 #waveform = Model(double_diff,nan_policy='raise')
-plt.plot(t,volt)
+plt.plot(t,volt,'k-',label = 'baseline-subtracted trace')
 #plt.plot(t,waveform.eval(x=t,an=b['an'],cat=b['cat'],cent_c=b['cent_c'],thold=b['thold'],tcrise=b['tcrise'],tarise=b['tarise'],cent_a=b['cent_a'],gam_a=b['gam_a'],skew_a=b['skew_a'],gam_c=b['gam_c'],skew_c=b['skew_c']))
 
+fittermodel = Model(fitter_func,nan_policy='raise')
+
 tfine = np.arange(t[0],t[-1]+0.8,(t[1]-t[0])/10.0)
-plt.plot(tfine,wavmodel.eval(x=tfine,an=b['an'],cat=b['cat'],cent_c=b['cent_c'],tcrise=b['tcrise'],tarise=b['tarise'],cent_a=b['cent_a'],gam_a=b['gam_a'],gam_c=b['gam_c'],skew_a=b['skew_a'],offst=b['offst']))
+plt.plot(tfine,wavmodel.eval(x=tfine,an=b['an'],cat=b['cat'],cent_c=b['cent_c'],tcrise=b['tcrise'],tarise=b['tarise'],cent_a=b['cent_a'],gam_a=b['gam_a'],gam_c=b['gam_c'],skew_a=b['skew_a'],offst=b['offst']),'r-',label='proposed: an=42.04 mV')
+plt.plot(tfine,fittermodel.eval(x=tfine,cat=41.94,an=41.28,tcrise=1.0,tarise=2.9,offst=0.0,thold=395.3),'b-',label='standard: an=41.28 mV')
+plt.xlabel('time [$\mu$s]')
+plt.ylabel('amplitude [mV]')
+plt.xlim([-25,155])
+plt.legend(loc='upper right')
 #plt.figure()
 #plt.plot(t,volt)
 
