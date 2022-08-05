@@ -146,14 +146,14 @@ class Graph(tk.Frame):
             an=downstroke,
             cat=cathode,
             offst=0.4508981196975133,
+            tcrise= 2.500097,
+            cent_c= 10.45424 ,
+            gam_c= 1.311262 ,
+            tarise= 0.794747,
+            cent_a= 82.00704 ,
+            gam_a=  2.772346 ,
+            skew_a= 0.3434182,
             #thold=self.p_i[3],
-            tcrise=1.8283226210386985,
-            tarise=1.019244708214796,
-            cent_a=81.41672761244706,
-            gam_a=1.80825,
-            skew_a=0.9827649391120391,
-            gam_c=0.4583927179361264,
-            cent_c=9.20915832759835
         )
 
         # Get noise
@@ -246,28 +246,27 @@ class Graph(tk.Frame):
         wavparams['an'].value = downstroke
         wavparams['offst'].value = 0.4508981196975133
         #wavparams['thold'].value = self.p_i[3]
-        wavparams['tcrise'].value = 1.8283226210386985
-        wavparams['tarise'].value = 1.019244708214796
-        wavparams['cent_a'].value = 81.41672761244706
-        wavparams['gam_a'].value = 1.80825
-        wavparams['skew_a'].value = 0.9827649391120391
-        wavparams['cent_c'].value = 9.20915832759835
-        wavparams['gam_c'].value = 0.4583927179361264
-
+        wavparams['tcrise'].value = 2.500097
+        wavparams['cent_c'].value = 10.45424
+        wavparams['gam_c'].value = 1.311262
+        wavparams['tarise'].value = 0.794747
+        wavparams['cent_a'].value = 82.00704
+        wavparams['gam_a'].value =  2.772346
+        wavparams['skew_a'].value = 0.3434182
         # self.wavmodel = Model(self.smeared_func, nan_policy='raise')
         self.waveform = self.wavmodel.eval(
             x=self.t,
             an=downstroke,
             cat=cathode,
             offst=0.4508981196975133,
+            tcrise= 2.500097,
+            cent_c= 10.45424 ,
+            gam_c= 1.311262 ,
+            tarise= 0.794747,
+            cent_a= 82.00704 ,
+            gam_a=  2.772346 ,
+            skew_a= 0.3434182,
             #thold=self.p_i[3],
-            tcrise=1.8283226210386985,
-            tarise=1.019244708214796,
-            cent_a=81.41672761244706,
-            gam_a=1.80825,
-            skew_a=0.9827649391120391,
-            gam_c=0.4583927179361264,
-            cent_c=9.20915832759835
         )
         for i in range(0,len(self.waveform)) :
           self.waveform[i] = self.waveform[i] + random.gauss(0.0,0.066)
