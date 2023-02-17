@@ -1,4 +1,5 @@
 # ttk gives the widgets a more modern look
+
 try:
     import tkinter as tk
     from tkinter import Menu, ttk,filedialog
@@ -10,7 +11,7 @@ except ModuleNotFoundError:
 
 import threading
 import matplotlib
-
+from pathlib import WindowsPath
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 from matplotlib.figure import Figure
@@ -213,7 +214,7 @@ class Graph(tk.Frame):
         self.t = [1.0e6 * (float(self.preamble.split(';')[8]) * float(i) + float(self.preamble.split(';')[10])) for i in
                   range(0, 500)]
         self.t = np.array(self.t)
-        if self.ct %2 == 0:
+        if WindowsPath('c:/Users/.shutterclosed').exists() == False:
             msg = self.textfile
             dl_txt = self.textfile.split(',')
         else:
@@ -290,7 +291,7 @@ class Graph(tk.Frame):
             dl_sig_bkg = np.array([ (int(dl)>>2)*4 for dl in dl_sig_bkg])
             dl_bkg = np.array([ (int(dl)>>2)*4 for dl in dl_bkg])
 
-        if self.ct % 2 == 0 :
+        if WindowsPath('c:/Users/.shutterclosed').exists() == False :
             msg = ','.join([ str(-dl) for dl in dl_bkg ]) + '\n'
             self.waveform = 1000.0*float(self.preamble.split(';')[12])*(dl_bkg - float(self.preamble.split(';')[14])) + float(self.preamble.split(';')[13])
         else :
@@ -415,6 +416,7 @@ preamble = root.graph.graph.preamble
 event = root.graph.graph.event
 
 web_server = HTTPServer((HOST, PORT), MyServer)
+print("Hello")
 print(f'Server started http://{HOST}:{PORT}')
 
 
