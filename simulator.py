@@ -29,6 +29,10 @@ from lmfit import Model
 from scipy import interpolate
 from lmfit.models import ExponentialGaussianModel
 
+isRandom = False
+noisetrace = []
+for i in range(0,500) :
+    noisetrace.append( random.gauss(0.0,0.066) )
 
 
 class MyServer(SimpleHTTPRequestHandler):
@@ -214,7 +218,7 @@ class Graph(tk.Frame):
         self.t = [1.0e6 * (float(self.preamble.split(';')[8]) * float(i) + float(self.preamble.split(';')[10])) for i in
                   range(0, 500)]
         self.t = np.array(self.t)
-        if WindowsPath('c:/Users/.shutterclosed').exists() == False:
+        if (WindowsPath.home() / '.shutterclosed').exists() == True:
             msg = self.textfile
             dl_txt = self.textfile.split(',')
         else:
@@ -269,8 +273,12 @@ class Graph(tk.Frame):
             skew_a= 0.3434182,
             #thold=self.p_i[3],
         )
+        global noisetrace
+        if isRandom :
+          for i in range(0,500) :
+            noisetrace[i] = ( random.gauss(0.0,0.066) )
         for i in range(0,len(self.waveform)) :
-          self.waveform[i] = self.waveform[i] + random.gauss(0.0,0.066)
+          self.waveform[i] = self.waveform[i] + noisetrace[i] 
 
         f_bkg = open('./raw_bkg_template.dat','r')#noise template was recorded in 14-bit mode
         baseline = f_bkg.read()
@@ -291,11 +299,11 @@ class Graph(tk.Frame):
             dl_sig_bkg = np.array([ (int(dl)>>2)*4 for dl in dl_sig_bkg])
             dl_bkg = np.array([ (int(dl)>>2)*4 for dl in dl_bkg])
 
-        if WindowsPath('c:/Users/.shutterclosed').exists() == False :
-            msg = ','.join([ str(-dl) for dl in dl_bkg ]) + '\n'
+        if (WindowsPath.home() / '.shutterclosed').exists() == True :
+            msg = ','.join([ str(dl) for dl in dl_bkg ]) + '\n'
             self.waveform = 1000.0*float(self.preamble.split(';')[12])*(dl_bkg - float(self.preamble.split(';')[14])) + float(self.preamble.split(';')[13])
         else :
-            msg = ','.join([ str(-dl) for dl in dl_sig_bkg ]) + '\n'
+            msg = ','.join([ str(dl) for dl in dl_sig_bkg ]) + '\n'
             self.waveform = 1000.0*float(self.preamble.split(';')[12])*(dl_sig_bkg - float(self.preamble.split(';')[14])) + float(self.preamble.split(';')[13])
         # Increment counter
         self.ct = self.ct + 1
