@@ -12,6 +12,7 @@ except ModuleNotFoundError:
 import threading
 import matplotlib
 from pathlib import WindowsPath
+from pathlib import Path
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 from matplotlib.figure import Figure
@@ -218,7 +219,11 @@ class Graph(tk.Frame):
         self.t = [1.0e6 * (float(self.preamble.split(';')[8]) * float(i) + float(self.preamble.split(';')[10])) for i in
                   range(0, 500)]
         self.t = np.array(self.t)
-        if (WindowsPath.home() / '.shutterclosed').exists() == True:
+        try :
+          pathExists = (WindowsPath.home() / '.shutterclosed').exists()
+        except Exception :
+          pathExists = Path( '/tmp/.shutterclosed').exists()
+        if pathExists :
             msg = self.textfile
             dl_txt = self.textfile.split(',')
         else:
@@ -299,7 +304,11 @@ class Graph(tk.Frame):
             dl_sig_bkg = np.array([ (int(dl)>>2)*4 for dl in dl_sig_bkg])
             dl_bkg = np.array([ (int(dl)>>2)*4 for dl in dl_bkg])
 
-        if (WindowsPath.home() / '.shutterclosed').exists() == True :
+        try :
+          pathExists = (WindowsPath.home() / '.shutterclosed').exists()
+        except Exception :
+          pathExists = Path( '/tmp/.shutterclosed').exists()
+        if pathExists :
             msg = ','.join([ str(dl) for dl in dl_bkg ]) + '\n'
             self.waveform = 1000.0*float(self.preamble.split(';')[12])*(dl_bkg - float(self.preamble.split(';')[14])) + float(self.preamble.split(';')[13])
         else :
