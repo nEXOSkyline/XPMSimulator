@@ -214,8 +214,15 @@ class Graph(tk.Frame):
         #print('Background select button has been pressed')
         self.backgroundname = filedialog.askopenfilename(initialdir = ' C:/Users/skyphysics/', title = 'select background file', filetypes =[("Text Files","*.txt") , ("Data Files","*.dat")])
         self.f2 = open(self.backgroundname)
-        self.background = self.f2.read()
-        self.background = ','.join([ str( int((int(s)-float(self.preamble.split(';')[14]))*256) ) for s in self.background.split(',')]) + '\n'
+        myreader = csv.reader(self.f2,delimiter=',')
+        datalevels = []
+        for row in myreader :
+            millivolt = float(row[1])/1000.0
+            dl = float(self.preamble.split(';')[14]) + (millivolt/1000.0 - float(self.preamble.split(';')[13])) / float(self.preamble.split(';')[12])
+            datalevels.append(str(int(dl)))
+        self.background = ','.join(datalevels) #self.f.read()
+        #self.background = self.f2.read()
+        #self.background = ','.join([ str( int((int(s)-float(self.preamble.split(';')[14]))*256) ) for s in self.background.split(',')]) + '\n'
         self.f2.close()
         self.filelocation2.set(self.backgroundname)
         self.fl_label2.place(x=0,y=50)
