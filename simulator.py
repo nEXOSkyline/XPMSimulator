@@ -9,6 +9,7 @@ except ModuleNotFoundError:
     import ttk
     from ttk import *
 
+import csv
 import threading
 import matplotlib
 from pathlib import WindowsPath
@@ -196,8 +197,14 @@ class Graph(tk.Frame):
         #print('File select button has been pressed')
         self.filename = filedialog.askopenfilename(initialdir='C:/Users/skyphysics/',title='select a file',filetypes=[("Text Files","*.txt") , ("Data Files","*.dat")])
         self.f = open(self.filename)
-        self.textfile = self.f.read()
-        self.textfile = ','.join([ str( int((int(s)-float(self.preamble.split(';')[14]))*256) ) for s in self.textfile.split(',')]) + '\n'
+        myreader = csv.reader(self.f,delimiter=',')
+        datalevels = []
+        for row in myreader :
+            millivolt = float(row[1])/1000.0
+            dl = float(self.preamble.split(';')[14]) + (millivolt/1000.0 - float(self.preamble.split(';')[13])) / float(self.preamble.split(';')[12])
+            datalevels.append(str(int(dl)))
+        self.textfile = ','.join(datalevels) #self.f.read()
+        #self.textfile = ','.join([ str( int((int(s)-float(self.preamble.split(';')[14]))*256) ) for s in self.textfile.split(',')]) + '\n'
         self.f.close()
         print(self.textfile)
         self.filelocation.set(self.filename)
