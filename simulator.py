@@ -195,12 +195,13 @@ class Graph(tk.Frame):
 
     def fileselect(self):
         #print('File select button has been pressed')
+        self.preamble = self.preamble_16_bit if self.is_14bit else self.preamble_8_bit
         self.filename = filedialog.askopenfilename(initialdir='C:/Users/skyphysics/',title='select a file',filetypes=[("Text Files","*.txt") , ("Data Files","*.dat")])
         self.f = open(self.filename)
         myreader = csv.reader(self.f,delimiter=',')
         datalevels = []
         for row in myreader :
-            millivolt = float(row[1])/1000.0
+            millivolt = float(row[1])
             dl = float(self.preamble.split(';')[14]) + (millivolt/1000.0 - float(self.preamble.split(';')[13])) / float(self.preamble.split(';')[12])
             datalevels.append(str(int(dl)))
         self.textfile = ','.join(datalevels) #self.f.read()
@@ -217,7 +218,7 @@ class Graph(tk.Frame):
         myreader = csv.reader(self.f2,delimiter=',')
         datalevels = []
         for row in myreader :
-            millivolt = float(row[1])/1000.0
+            millivolt = float(row[1])
             dl = float(self.preamble.split(';')[14]) + (millivolt/1000.0 - float(self.preamble.split(';')[13])) / float(self.preamble.split(';')[12])
             datalevels.append(str(int(dl)))
         self.background = ','.join(datalevels) #self.f.read()
@@ -238,11 +239,11 @@ class Graph(tk.Frame):
         except Exception :
           pathExists = Path( '/tmp/.shutterclosed').exists()
         if pathExists :
-            msg = self.textfile
-            dl_txt = self.textfile.split(',')
-        else:
             dl_txt = self.background.split(',')
             msg = self.background
+        else:
+            msg = self.textfile
+            dl_txt = self.textfile.split(',')
         dl = np.array([ int(s) for s in dl_txt ])
         millivolt = float(self.preamble.split(';')[12])*(dl - float(self.preamble.split(';')[14])) + float(self.preamble.split(';')[13])
         millivolt = millivolt * 1000.0
